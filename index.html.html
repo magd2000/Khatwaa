@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khatwa — From idea to action</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --yellow:#FFCC00;
+  --yellow-soft:#FFF4CC;
+  --ink:#0D0D0D;
+  --ink-2:#1A1A1A;
+  --white:#FFFFFF;
+  --paper:#F7F6F3;
+  --line:#E7E5DE;
+  --muted:#6E6B64;
+  --green:#1B9C6B;
+  --radius:14px;
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--body);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- screens ---------- */
+.screen{display:none;min-height:100vh}
+.screen.on{display:block;animation:fade .28s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- brand ---------- */
+.mark{width:34px;height:34px;flex:none;color:var(--yellow)}
+.mark path{fill:currentColor}
+.wordmark svg,.bn svg{color:var(--yellow)}
+.wordmark{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.02em}
+.wordmark small{display:block;font-family:var(--body);font-weight:500;font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.55;margin-top:1px}
+.wordmark.clickable{transition:opacity .15s ease}
+.wordmark.clickable:hover{opacity:.6}
+.topbar{display:none}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:999px;font-weight:600;font-size:15px;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+.btn-primary{background:var(--yellow);color:var(--ink)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(255,204,0,.35)}
+.btn-ghost{background:transparent;color:inherit;border:1px solid rgba(255,255,255,.22)}
+.btn-ghost:hover{background:rgba(255,255,255,.08)}
+.btn-line{background:var(--white);border:1px solid var(--line);color:var(--ink)}
+.btn-line:hover{border-color:var(--ink)}
+.btn-sm{padding:9px 16px;font-size:13.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ================= LANDING ================= */
+#landing{background:var(--ink);color:var(--white)}
+.dots{background-image:radial-gradient(rgba(255,255,255,.10) 1px,transparent 1px);background-size:16px 16px}
+.nav{max-width:1180px;margin:0 auto;padding:22px 26px;display:flex;align-items:center;justify-content:space-between}
+.nav-links{display:flex;gap:28px;font-size:14.5px;font-weight:500}
+.nav-links a{opacity:.72;text-decoration:none}
+.nav-links a:hover{opacity:1}
+.nav-right{display:flex;align-items:center;gap:14px}
+@media(max-width:880px){.nav-links{display:none}}
+
+.hero{max-width:1180px;margin:0 auto;padding:52px 26px 80px;display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+.hero h1{font-family:var(--display);font-size:clamp(38px,5.4vw,62px);line-height:1.03;letter-spacing:-.035em;font-weight:700}
+.hero h1 em{font-style:normal;color:var(--yellow)}
+.hero p.sub{margin-top:20px;font-size:17.5px;line-height:1.6;color:rgba(255,255,255,.66);max-width:44ch}
+.capture{margin-top:30px;display:flex;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:7px 7px 7px 20px;max-width:520px}
+.capture input{flex:1;background:none;border:none;outline:none;color:var(--white);font-size:15.5px}
+.capture input::placeholder{color:rgba(255,255,255,.4)}
+.fineprint{margin-top:14px;font-size:13px;color:rgba(255,255,255,.42)}
+
+/* hero demo card */
+.demo{background:var(--ink-2);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:26px}
+.demo .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:16px}
+.demo-idea{background:rgba(255,255,255,.05);border-radius:12px;padding:14px 16px;font-size:15px;font-weight:500}
+.chain{margin-top:6px}
+.chain-row{display:flex;gap:14px;align-items:flex-start;padding:13px 0}
+.chain-dot{width:26px;height:26px;flex:none;border-radius:50%;background:rgba(255,255,255,.08);display:grid;place-items:center;font-size:12px;font-weight:600;font-family:var(--display);color:rgba(255,255,255,.6);position:relative}
+.chain-row.lit .chain-dot{background:var(--yellow);color:var(--ink)}
+.chain-row:not(:last-child) .chain-dot::after{content:"";position:absolute;top:26px;left:50%;width:1px;height:26px;background:rgba(255,255,255,.14)}
+.chain-t{font-size:14.5px;font-weight:600}
+.chain-s{font-size:13px;color:rgba(255,255,255,.45);margin-top:2px}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:30px}.demo{order:2}}
+
+.band{border-top:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.1)}
+.band-in{max-width:1180px;margin:0 auto;padding:0 26px;display:grid;grid-template-columns:repeat(4,1fr)}
+.band-cell{padding:34px 22px;border-right:1px solid rgba(255,255,255,.1)}
+.band-cell:last-child{border-right:none}
+.band-cell h4{font-family:var(--display);font-size:16px;margin:12px 0 6px;font-weight:600}
+.band-cell p{font-size:13.5px;line-height:1.55;color:rgba(255,255,255,.5)}
+.ic{color:var(--yellow)}
+@media(max-width:820px){.band-in{grid-template-columns:1fr 1fr}.band-cell{border-bottom:1px solid rgba(255,255,255,.1)}}
+@media(max-width:520px){.band-in{grid-template-columns:1fr}.band-cell{border-right:none}}
+
+.how{max-width:1180px;margin:0 auto;padding:84px 26px}
+.sec-head{text-align:center;margin-bottom:44px}
+.sec-head h2{font-family:var(--display);font-size:clamp(28px,3.6vw,40px);letter-spacing:-.03em;font-weight:700}
+.sec-head p{margin-top:12px;color:rgba(255,255,255,.55);font-size:16px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.step{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:26px;transition:border-color .2s}
+.step:hover{border-color:rgba(255,204,0,.5)}
+.step .n{font-family:var(--display);font-size:13px;color:var(--yellow);letter-spacing:.1em;font-weight:600}
+.step h3{font-family:var(--display);font-size:20px;margin:14px 0 8px;letter-spacing:-.02em}
+.step p{font-size:14.5px;line-height:1.6;color:rgba(255,255,255,.55)}
+@media(max-width:820px){.steps{grid-template-columns:1fr}}
+
+.quote{max-width:1180px;margin:0 auto 84px;padding:0 26px}
+.quote-in{background:linear-gradient(100deg,rgba(255,204,0,.14),rgba(255,255,255,.03));border:1px solid rgba(255,204,0,.24);border-radius:20px;padding:38px 40px;display:flex;gap:26px;align-items:center}
+.quote-in blockquote{font-family:var(--display);font-size:21px;line-height:1.45;letter-spacing:-.015em}
+.who{font-size:13.5px;color:rgba(255,255,255,.5);margin-top:12px}
+.avatar{width:54px;height:54px;border-radius:50%;background:var(--yellow);color:var(--ink);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:19px;flex:none}
+@media(max-width:640px){.quote-in{flex-direction:column;align-items:flex-start;padding:28px}}
+
+.final{text-align:center;padding:0 26px 96px}
+.final h2{font-family:var(--display);font-size:clamp(30px,4vw,44px);letter-spacing:-.03em}
+.final p{color:rgba(255,255,255,.55);margin:14px 0 28px;font-size:16.5px}
+.foot{border-top:1px solid rgba(255,255,255,.1);padding:30px 26px;text-align:center;font-size:13px;color:rgba(255,255,255,.38)}
+
+/* ================= AUTH / ONBOARDING ================= */
+.center-wrap{min-height:100vh;display:grid;place-items:center;padding:32px 20px;background:var(--ink);color:var(--white)}
+.card-auth{width:100%;max-width:430px;background:var(--white);color:var(--ink);border-radius:22px;padding:34px}
+.card-auth h2{font-family:var(--display);font-size:26px;letter-spacing:-.025em}
+.card-auth .lede{color:var(--muted);font-size:14.5px;margin-top:8px;line-height:1.55}
+.field{margin-top:18px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+.field input,.field textarea,.field select{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:13px 15px;font-size:15px;outline:none}
+.field input:focus,.field textarea:focus{border-color:var(--ink);background:var(--white)}
+.w-full{width:100%}
+.mt-20{margin-top:20px}
+.alt{text-align:center;font-size:13.5px;color:var(--muted);margin-top:16px}
+.chipset{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px}
+.chip{padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:var(--white);font-size:14px;font-weight:500;transition:.15s}
+.chip[aria-pressed="true"]{background:var(--yellow);border-color:var(--yellow);font-weight:600}
+.stepdots{display:flex;gap:6px;justify-content:center;margin-top:22px}
+.stepdots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.stepdots i.on{background:var(--ink);width:18px;border-radius:3px}
+
+/* ================= APP SHELL ================= */
+.app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.side{background:var(--white);border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+.side .wordmark{color:var(--ink);padding:4px 8px 20px;width:100%}
+.navitem{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:11px;font-size:14.5px;font-weight:500;color:var(--muted);width:100%;text-align:left;transition:.15s}
+.navitem:hover{background:var(--paper);color:var(--ink)}
+.navitem.on{background:var(--ink);color:var(--white);font-weight:600}
+.side-foot{margin-top:auto;background:var(--yellow-soft);border-radius:14px;padding:15px}
+.side-foot p{font-size:12.5px;line-height:1.5;color:#7A6400}
+.main{padding:30px 34px 70px;max-width:1120px}
+.bottomnav{display:none}
+@media(max-width:860px){
+  .app{grid-template-columns:1fr}
+  .side{display:none}
+  .main{padding:18px 16px 96px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:35;background:var(--white);border-bottom:1px solid var(--line);padding:12px 16px}
+  .topbar .wordmark{font-size:17px}
+  .bottomnav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--line);z-index:40;padding:8px 4px 10px}
+  .bn{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--muted);font-weight:500;padding:4px}
+  .bn.on{color:var(--ink);font-weight:600}
+}
+
+.pagehead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.pagehead h1{font-family:var(--display);font-size:29px;letter-spacing:-.03em}
+.pagehead p{color:var(--muted);font-size:14.5px;margin-top:6px}
+
+.capture-app{display:flex;gap:10px;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:8px 8px 8px 18px;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.capture-app input{flex:1;border:none;background:none;outline:none;font-size:15.5px}
+.capture-app:focus-within{border-color:var(--ink)}
+
+.grid3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:16px;margin-top:22px}
+@media(max-width:900px){.grid3{grid-template-columns:1fr}}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h3{font-family:var(--display);font-size:15.5px;letter-spacing:-.01em;margin-bottom:4px}
+.card .hint{font-size:13px;color:var(--muted)}
+
+.ring-wrap{display:flex;align-items:center;gap:18px}
+.ring{--p:0;width:92px;height:92px;flex:none;border-radius:50%;display:grid;place-items:center;
+  background:conic-gradient(var(--yellow) calc(var(--p)*1%),var(--paper) 0);position:relative}
+.ring::after{content:"";position:absolute;inset:9px;background:var(--white);border-radius:50%}
+.ring b{position:relative;z-index:1;font-family:var(--display);font-size:21px}
+.statline{display:flex;gap:26px;margin-top:14px}
+.statline div span{display:block;font-family:var(--display);font-size:23px}
+.statline div small{font-size:12.5px;color:var(--muted)}
+
+.tasknext{background:var(--ink);color:var(--white);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;justify-content:space-between}
+.tasknext .lbl{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--yellow);font-weight:600}
+.tasknext h4{font-family:var(--display);font-size:17px;margin:10px 0 6px;line-height:1.3}
+.tasknext .meta{font-size:12.5px;color:rgba(255,255,255,.5)}
+
+.sec-title{font-family:var(--display);font-size:18px;letter-spacing:-.02em;margin:34px 0 14px;display:flex;justify-content:space-between;align-items:center}
+.sec-title button{font-family:var(--body);font-size:13.5px;color:var(--muted);font-weight:500}
+.sec-title button:hover{color:var(--ink)}
+
+.ideagrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.ideagrid{grid-template-columns:1fr}}
+.ideacard{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:18px;text-align:left;transition:.18s;width:100%}
+.ideacard:hover{border-color:var(--ink);transform:translateY(-2px)}
+.ideacard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ideacard h4{font-family:var(--display);font-size:16px;letter-spacing:-.015em}
+.emoji{font-size:20px}
+.bar{height:6px;background:var(--paper);border-radius:99px;margin:16px 0 9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--yellow);border-radius:99px;transition:width .5s ease}
+.barmeta{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+
+.rowlist{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.row{display:flex;align-items:center;gap:14px;padding:15px 18px;border-bottom:1px solid var(--line);text-align:left;width:100%;transition:background .15s}
+.row:last-child{border-bottom:none}
+.row:hover{background:var(--paper)}
+.row .t{flex:1;font-size:14.5px;font-weight:500}
+.tag{font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:99px;background:var(--yellow-soft);color:#7A6400}
+.tag.done{background:#E4F5EE;color:var(--green)}
+.row .date{font-size:12.5px;color:var(--muted)}
+@media(max-width:600px){.row .date{display:none}}
+
+.empty{background:var(--white);border:1px dashed var(--line);border-radius:var(--radius);padding:40px 24px;text-align:center}
+.empty h4{font-family:var(--display);font-size:17px;margin-bottom:6px}
+.empty p{color:var(--muted);font-size:14px;margin-bottom:18px}
+
+/* ---- add / clarify ---- */
+.narrow{max-width:640px}
+.bigbox{width:100%;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:18px;font-size:17px;line-height:1.5;min-height:120px;resize:vertical;outline:none}
+.bigbox:focus{border-color:var(--ink)}
+.choice{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+.qcard{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:14px}
+.qcard .q{font-family:var(--display);font-size:16px;margin-bottom:12px}
+.backlink{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:14px;display:inline-flex;gap:6px}
+.backlink:hover{color:var(--ink)}
+
+/* ---- plan preview ---- */
+.planbox{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:16px}
+.msrow{display:flex;gap:16px;padding:15px 0;border-bottom:1px solid var(--line)}
+.msrow:last-child{border-bottom:none}
+.msnum{width:28px;height:28px;flex:none;border-radius:50%;background:var(--paper);display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:13px}
+.msrow h4{font-family:var(--display);font-size:15.5px;margin-bottom:3px}
+.msrow p{font-size:13.5px;color:var(--muted);line-height:1.5}
+
+/* ---- workspace ---- */
+.wshead{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.wshead h1{font-family:var(--display);font-size:28px;letter-spacing:-.03em;display:flex;align-items:center;gap:10px}
+.progline{display:flex;align-items:center;gap:12px;margin-top:14px;max-width:420px}
+.progline .bar{flex:1;margin:0}
+.progline b{font-family:var(--display);font-size:15px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:24px 0 22px;overflow-x:auto}
+.tab{padding:11px 16px;font-size:14.5px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--ink);font-weight:600;border-bottom-color:var(--yellow)}
+.wsgrid{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+@media(max-width:960px){.wsgrid{grid-template-columns:1fr}}
+
+/* signature: the step rail with the dove */
+.rail{position:relative;margin:20px 0 6px;padding-top:34px}
+.rail-line{position:absolute;left:0;right:0;top:44px;height:2px;background:var(--line)}
+.rail-fill{position:absolute;left:0;top:44px;height:2px;background:var(--yellow);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.dove-fly{position:absolute;top:22px;transform:translateX(-50%);color:var(--yellow);filter:drop-shadow(0 1px 2px rgba(0,0,0,.28));transition:left .6s cubic-bezier(.4,0,.2,1);z-index:2}
+.dove-fly svg{width:26px;height:26px;display:block}
+.rail-stops{display:flex;justify-content:space-between;position:relative}
+.stop{display:flex;flex-direction:column;align-items:center;gap:9px;width:25%;text-align:center}
+.stop .dot{width:14px;height:14px;border-radius:50%;background:var(--white);border:2px solid var(--line);margin-top:15px}
+.stop.done .dot{background:var(--yellow);border-color:var(--yellow)}
+.stop.now .dot{background:var(--ink);border-color:var(--ink)}
+.stop small{font-size:12px;color:var(--muted);line-height:1.35}
+.stop b{font-size:12.5px;font-family:var(--display)}
+.stop.now b{color:var(--ink)}
+
+.taskrow{display:flex;align-items:center;gap:13px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;margin-bottom:9px;background:var(--white);transition:.18s}
+.taskrow:hover{border-color:var(--ink)}
+.taskrow.done{opacity:.55}
+.taskrow.done .tt{text-decoration:line-through}
+.tick{width:22px;height:22px;flex:none;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;transition:.18s}
+.taskrow.done .tick{background:var(--green);border-color:var(--green)}
+.tick svg{width:12px;height:12px;color:#fff;opacity:0}
+.taskrow.done .tick svg{opacity:1}
+.tt{flex:1;font-size:14.5px;font-weight:500;text-align:left}
+
+.assist{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:18px;position:sticky;top:24px}
+.assist .ahead{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.assist .ahead b{font-family:var(--display);font-size:14.5px}
+.prompt{width:100%;text-align:left;background:var(--paper);border-radius:11px;padding:12px 14px;font-size:13.5px;font-weight:500;margin-bottom:8px;transition:.15s}
+.prompt:hover{background:var(--yellow-soft)}
+.reply{background:var(--yellow-soft);border-radius:11px;padding:13px 15px;font-size:13.5px;line-height:1.6;color:#5F5100;margin-bottom:10px}
+
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.statbox{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:15px;text-align:center}
+.statbox span{display:block;font-family:var(--display);font-size:20px}
+.statbox small{font-size:12px;color:var(--muted)}
+
+.summary{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px;line-height:1.65;font-size:14.5px;color:#3A3833}
+
+/* toast + celebrate */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--white);padding:13px 22px;border-radius:999px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:.3s;z-index:100}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media(max-width:860px){.toast{bottom:88px}}
+.celebrate{position:fixed;inset:0;background:rgba(13,13,13,.9);display:none;place-items:center;z-index:110;padding:24px}
+.celebrate.on{display:grid}
+.celebrate .in{background:var(--white);border-radius:22px;padding:38px 32px;text-align:center;max-width:400px}
+.celebrate h2{font-family:var(--display);font-size:26px;margin:16px 0 8px;letter-spacing:-.02em}
+.celebrate p{color:var(--muted);font-size:14.5px;line-height:1.6;margin-bottom:22px}
+</style>
+</head>
+<body>
+
+<svg style="display:none">
+  <symbol id="dove" viewBox="0 0 64 64">
+    <path fill="currentColor" d="M5 45c12 1 20-4 25-12 3-6 8-12 18-15-4 6-6 11-6 16 8-2 14-7 17-14 1 13-6 24-18 28-11 4-27 3-36-3z"/>
+  </symbol>
+  <symbol id="check" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+</svg>
+
+<!-- ================= LANDING ================= -->
+<section id="landing" class="screen on">
+  <div class="dots">
+    <nav class="nav">
+      <div class="wordmark"><svg class="mark"><use href="#dove"/></svg><div>Khatwa<small>From idea to action</small></div></div>
+      <div class="nav-links">
+        <a href="#" onclick="return false">Features</a>
+        <a href="#" onclick="return false">How it works</a>
+        <a href="#" onclick="return false">Pricing</a>
+        <a href="#" onclick="return false">Blog</a>
+      </div>
+      <div class="nav-right">
+        <button class="btn btn-ghost btn-sm" onclick="go('signup')">Log in</button>
+        <button class="btn btn-primary btn-sm" onclick="go('signup')">Get started</button>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <div>
+        <h1>Turn ideas into <em>steps you'll actually take.</em></h1>
+        <p class="sub">Write down anything you want to learn, build, improve or achieve. Khatwa turns it into a clear plan and keeps bringing you the next step.</p>
+        <div class="capture">
+          <input id="heroIdea" placeholder="I want to learn photography…" aria-label="Your idea">
+          <button class="btn btn-primary btn-sm" onclick="fromHero()">Start now</button>
+        </div>
+        <p class="fineprint">Free to start · No credit card needed</p>
+      </div>
+
+      <div class="demo">
+        <div class="eyebrow">What happens to an idea</div>
+        <div class="demo-idea">"I want to learn photography"</div>
+        <div class="chain">
+          <div class="chain-row lit"><div class="chain-dot">1</div><div><div class="chain-t">Answer three questions</div><div class="chain-s">Why it matters, how long you've got, hours per week</div></div></div>
+          <div class="chain-row lit"><div class="chain-dot">2</div><div><div class="chain-t">Get a plan in milestones</div><div class="chain-s">Four stages, each with real tasks</div></div></div>
+          <div class="chain-row"><div class="chain-dot">3</div><div><div class="chain-t">Take the first step today</div><div class="chain-s">One task at a time, never the whole mountain</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="band-in">
+      <div class="band-cell"><svg class="mark ic" style="width:26px;height:26px"><use href="#dove"/></svg><h4>From idea to plan</h4><p>Describe it in one line. Get a structure you can start on today.</p></div>
+      <div class="band-cell"><svg class="mark ic" style="width:26px;height:26px"><use href="#dove"/></svg><h4>Built around your time</h4><p>Plans fit the hours you actually have, not an ideal week.</p></div>
+      <div class="band-cell"><svg class="mark ic" style="width:26px;height:26px"><use href="#dove"/></svg><h4>Progress you can see</h4><p>Every finished task moves the bar. Nothing quietly disappears.</p></div>
+      <div class="band-cell"><svg class="mark ic" style="width:26px;height:26px"><use href="#dove"/></svg><h4>An inbox for the rest</h4><p>Not ready yet? Park it. Khatwa brings it back later.</p></div>
+    </div>
+  </div>
+
+  <div class="how">
+    <div class="sec-head">
+      <h2>Every idea deserves a plan</h2>
+      <p>Three moves, and the idea stops being a note you forget.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="n">STEP 01</div><h3>Capture it</h3><p>Ideas arrive while you're doing something else. Write one line and get back to your day.</p></div>
+      <div class="step"><div class="n">STEP 02</div><h3>Turn it into a plan</h3><p>A few questions sharpen the goal, then it becomes milestones with tasks underneath.</p></div>
+      <div class="step"><div class="n">STEP 03</div><h3>Start taking action</h3><p>Khatwa always shows one next task. Finish it, and the next one appears.</p></div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <div class="quote-in">
+      <div class="avatar">S</div>
+      <div>
+        <blockquote>"I had four years of notes full of things I was going to do. Now I finish one."</blockquote>
+        <div class="who">Sara A. — architecture student</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="final">
+    <h2>Start your first step</h2>
+    <p>Write one idea. See what it looks like as a plan.</p>
+    <button class="btn btn-primary" onclick="go('signup')">Get started free</button>
+  </div>
+
+  <div class="foot">Khatwa — from idea to action · Prototype</div>
+</section>
+
+<!-- ================= SIGN UP ================= -->
+<section id="signup" class="screen">
+  <div class="center-wrap dots">
+    <div>
+      <button class="wordmark clickable" style="justify-content:center;margin-bottom:22px;width:100%" onclick="go('landing')" title="Back to the home page" aria-label="Back to the home page"><svg class="mark"><use href="#dove"/></svg><div>Khatwa</div></button>
+      <div class="card-auth">
+        <h2>Create your account</h2>
+        <p class="lede">One place for the ideas you keep meaning to act on.</p>
+        <div class="field"><label for="suName">Name</label><input id="suName" placeholder="Ahmad"></div>
+        <div class="field"><label for="suMail">Email</label><input id="suMail" type="email" placeholder="you@email.com"></div>
+        <div class="field"><label for="suPass">Password</label><input id="suPass" type="password" placeholder="At least 8 characters"></div>
+        <button class="btn btn-primary w-full mt-20" onclick="go('onboarding')">Create account</button>
+        <p class="alt">Already have an account? <button onclick="signIn()" style="font-weight:600;text-decoration:underline">Log in</button></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ONBOARDING ================= -->
+<section id="onboarding" class="screen">
+  <div class="center-wrap dots">
+    <div>
+      <button class="wordmark clickable" style="justify-content:center;margin-bottom:22px;width:100%" onclick="go('landing')" title="Back to the home page" aria-label="Back to the home page"><svg class="mark"><use href="#dove"/></svg><div>Khatwa</div></button>
+      <div class="card-auth" id="onbCard">
+        <h2 id="onbQ">What are you hoping to move forward?</h2>
+        <p class="lede" id="onbLede">Pick any that apply. This shapes the plans you get.</p>
+        <div id="onbBody" class="mt-20"></div>
+        <button class="btn btn-primary w-full mt-20" id="onbNext" onclick="onbNext()">Continue</button>
+        <div class="stepdots" id="onbDots"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= APP ================= -->
+<section id="app" class="screen">
+  <div class="app">
+    <aside class="side">
+      <button class="wordmark clickable" onclick="tab('home')" title="Back to home" aria-label="Back to home"><svg class="mark"><use href="#dove"/></svg><div>Khatwa</div></button>
+      <button class="navitem on" data-nav="home" onclick="tab('home')">Home</button>
+      <button class="navitem" data-nav="ideas" onclick="tab('ideas')">Ideas</button>
+      <button class="navitem" data-nav="completed" onclick="tab('completed')">Completed</button>
+      <button class="navitem" data-nav="profile" onclick="tab('profile')">Profile</button>
+      <div class="side-foot">
+        <p><b>Free plan</b><br>2 of 3 active plans used.</p>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="toast('Pricing page is not part of this prototype')">Upgrade</button>
+      </div>
+    </aside>
+
+    <div>
+      <div class="topbar">
+        <button class="wordmark clickable" onclick="tab('home')" title="Back to home" aria-label="Back to home"><svg class="mark" style="width:28px;height:28px"><use href="#dove"/></svg><div>Khatwa</div></button>
+        <button class="btn btn-primary btn-sm" onclick="openAdd('')">+ Idea</button>
+      </div>
+      <main class="main" id="view"></main>
+    </div>
+  </div>
+
+  <nav class="bottomnav">
+    <button class="bn on" data-nav="home" onclick="tab('home')"><svg style="width:20px;height:20px"><use href="#dove"/></svg>Home</button>
+    <button class="bn" data-nav="ideas" onclick="tab('ideas')"><svg style="width:20px;height:20px"><use href="#dove"/></svg>Ideas</button>
+    <button class="bn" data-nav="completed" onclick="tab('completed')"><svg style="width:20px;height:20px"><use href="#dove"/></svg>Done</button>
+    <button class="bn" data-nav="profile" onclick="tab('profile')"><svg style="width:20px;height:20px"><use href="#dove"/></svg>Profile</button>
+  </nav>
+</section>
+
+<div class="toast" id="toast"></div>
+<div class="celebrate" id="celebrate">
+  <div class="in">
+    <svg style="width:56px;height:56px;color:var(--yellow)"><use href="#dove"/></svg>
+    <h2 id="celTitle">Goal complete</h2>
+    <p id="celText">Every task done. That idea is no longer an idea.</p>
+    <button class="btn btn-primary" onclick="closeCel()">Back to home</button>
+  </div>
+</div>
+
+<script>
+/* ---------------- state ---------------- */
+const S = {
+  user:{name:'Ahmad', areas:[], hours:'5–6 h'},
+  draft:'', clarify:{}, currentId:null, wsTab:'overview',
+  ideas:[
+    {id:1, emoji:'🇩🇪', title:'Learn German', why:'To study in Germany next year', target:'6 months', hours:'5.5 h / week',
+     status:'active',
+     milestones:[
+       {name:'Foundations', span:'Weeks 1–4', tasks:[{t:'Learn the alphabet and pronunciation',d:true},{t:'Memorise the 100 most common words',d:true},{t:'Find a course that fits online',d:false},{t:'Set a weekly study schedule',d:false}]},
+       {name:'Basic grammar', span:'Weeks 5–10', tasks:[{t:'Present tense verbs',d:false},{t:'Cases: nominative and accusative',d:false}]},
+       {name:'Conversation', span:'Weeks 11–18', tasks:[{t:'Weekly session with a language partner',d:false}]},
+       {name:'B1 exam prep', span:'Weeks 19–24', tasks:[{t:'Two full practice exams',d:false}]}
+     ]},
+    {id:2, emoji:'🛒', title:'Launch an online store', why:'A second income from home', target:'3 months', hours:'4 h / week',
+     status:'active',
+     milestones:[
+       {name:'Pick the product', span:'Weeks 1–2', tasks:[{t:'List 10 product ideas',d:true},{t:'Check demand for the top 3',d:true}]},
+       {name:'Set up the store', span:'Weeks 3–6', tasks:[{t:'Choose a platform',d:false},{t:'Write the product pages',d:false}]},
+       {name:'First customers', span:'Weeks 7–12', tasks:[{t:'Plan the launch posts',d:false}]}
+     ]},
+    {id:3, emoji:'🏃', title:'Fitness and nutrition', why:'More energy through the day', target:'12 weeks', hours:'3 h / week',
+     status:'active',
+     milestones:[
+       {name:'Build the habit', span:'Weeks 1–3', tasks:[{t:'Walk 30 minutes, four days a week',d:true}]},
+       {name:'Add strength', span:'Weeks 4–8', tasks:[{t:'Two gym sessions a week',d:false},{t:'Learn the four basic lifts',d:false}]},
+       {name:'Fix the food', span:'Weeks 9–12', tasks:[{t:'Plan meals every Sunday',d:false}]}
+     ]}
+  ],
+  inbox:[
+    {id:11, title:'Build a mobile app', date:'20 May'},
+    {id:12, title:'Read 12 books this year', date:'18 May'},
+    {id:13, title:'Learn photography', date:'15 May'}
+  ],
+  seq:100
+};
+
+/* ---------------- helpers ---------------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$('#'+id).classList.add('on');window.scrollTo(0,0);if(id==='onboarding')renderOnb();}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('on'),2400);}
+function pct(idea){const all=idea.milestones.flatMap(m=>m.tasks);return all.length?Math.round(all.filter(t=>t.d).length/all.length*100):0;}
+function counts(idea){const all=idea.milestones.flatMap(m=>m.tasks);return[all.filter(t=>t.d).length,all.length];}
+function findIdea(id){return S.ideas.find(i=>i.id===id);}
+
+function fromHero(){const v=$('#heroIdea').value.trim();S.draft=v;go('signup');}
+function signIn(){S.user.name='Ahmad';go('app');tab('home');}
+
+/* ---------------- onboarding ---------------- */
+let onbStep=0;
+const AREAS=['Studying','Career','A business','Health','A skill','Creative work'];
+function renderOnb(){
+  const body=$('#onbBody'), dots=$('#onbDots');
+  dots.innerHTML=[0,1,2].map(i=>`<i class="${i<=onbStep?'on':''}"></i>`).join('');
+  if(onbStep===0){
+    $('#onbQ').textContent='What are you hoping to move forward?';
+    $('#onbLede').textContent='Pick any that apply. This shapes the plans you get.';
+    body.innerHTML=`<div class="chipset">${AREAS.map(a=>`<button class="chip" aria-pressed="${S.user.areas.includes(a)}" onclick="pickArea('${a}',this)">${a}</button>`).join('')}</div>`;
+  } else if(onbStep===1){
+    $('#onbQ').textContent='How much time do you have each week?';
+    $('#onbLede').textContent='Plans are built around this, so answer honestly.';
+    body.innerHTML=`<div class="chipset">${['1–2 h','3–4 h','5–6 h','7+ h'].map(h=>`<button class="chip" aria-pressed="${S.user.hours===h}" onclick="pickHours('${h}',this)">${h}</button>`).join('')}</div>`;
+  } else {
+    $('#onbQ').textContent='You\u2019re set';
+    $('#onbLede').textContent='Write your first idea whenever it turns up. One line is enough.';
+    body.innerHTML=`<div class="summary" style="margin-top:6px">Focus: <b>${S.user.areas.length?esc(S.user.areas.join(', ')):'anything'}</b><br>Time each week: <b>${esc(S.user.hours)}</b></div>`;
+    $('#onbNext').textContent='Go to Khatwa';
+  }
+}
+function pickArea(a,el){
+  const i=S.user.areas.indexOf(a);
+  if(i>-1)S.user.areas.splice(i,1);else S.user.areas.push(a);
+  el.setAttribute('aria-pressed',i===-1);
+}
+function pickHours(h,el){S.user.hours=h;document.querySelectorAll('#onbBody .chip').forEach(c=>c.setAttribute('aria-pressed','false'));el.setAttribute('aria-pressed','true');}
+function onbNext(){
+  const nm=$('#suName').value.trim(); if(nm)S.user.name=nm;
+  if(onbStep<2){onbStep++;renderOnb();}
+  else{go('app');if(S.draft){tab('home');openAdd(S.draft);}else tab('home');}
+}
+
+/* ---------------- nav ---------------- */
+let currentTab='home';
+function tab(name){
+  currentTab=name;
+  document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===name));
+  ({home:viewHome,ideas:viewIdeas,completed:viewCompleted,profile:viewProfile})[name]();
+  window.scrollTo(0,0);
+}
+
+/* ---------------- HOME ---------------- */
+function viewHome(){
+  const active=S.ideas.filter(i=>i.status==='active');
+  const doneTasks=S.ideas.flatMap(i=>i.milestones.flatMap(m=>m.tasks)).filter(t=>t.d).length;
+  const weekly=active.length?Math.round(active.reduce((a,i)=>a+pct(i),0)/active.length):0;
+  let next=null;
+  for(const i of active){for(const m of i.milestones){const t=m.tasks.find(x=>!x.d);if(t){next={idea:i,task:t};break;}}if(next)break;}
+
+  $('#view').innerHTML=`
+   <div class="pagehead">
+     <div><h1>Hi ${esc(S.user.name)}</h1><p>Which idea do you want to turn into a plan today?</p></div>
+   </div>
+   <div class="capture-app">
+     <input id="homeCapture" placeholder="Write your idea here…" onkeydown="if(event.key==='Enter')openAdd(this.value)">
+     <button class="btn btn-primary btn-sm" onclick="openAdd($('#homeCapture').value)">Start now</button>
+   </div>
+
+   <div class="grid3">
+     <div class="card">
+       <h3>Your week</h3><p class="hint">Across your active plans</p>
+       <div class="ring-wrap" style="margin-top:14px">
+         <div class="ring" style="--p:${weekly}"><b>${weekly}%</b></div>
+         <div class="statline">
+           <div><span>${doneTasks}</span><small>tasks done</small></div>
+           <div><span>${active.length}</span><small>active ideas</small></div>
+         </div>
+       </div>
+     </div>
+     ${next?`
+     <div class="tasknext">
+       <div><div class="lbl">Next step</div><h4>${esc(next.task.t)}</h4><div class="meta">${esc(next.idea.title)} · about 30 min</div></div>
+       <button class="btn btn-primary btn-sm" style="margin-top:16px;align-self:flex-start" onclick="openWorkspace(${next.idea.id})">Open the task</button>
+     </div>`:`
+     <div class="tasknext"><div><div class="lbl">Next step</div><h4>Nothing waiting</h4><div class="meta">Every task in your active plans is done.</div></div></div>`}
+     <div class="card">
+       <h3>Idea inbox</h3><p class="hint">Parked for later</p>
+       <div style="font-family:var(--display);font-size:34px;margin:14px 0 6px">${S.inbox.length}</div>
+       <button class="btn btn-line btn-sm" onclick="tab('ideas')">Review them</button>
+     </div>
+   </div>
+
+   <div class="sec-title">Active ideas <button onclick="tab('ideas')">See all</button></div>
+   ${active.length?`<div class="ideagrid">${active.map(cardIdea).join('')}</div>`:emptyState()}
+
+   <div class="sec-title">Idea inbox</div>
+   ${S.inbox.length?`<div class="rowlist">${S.inbox.map(i=>`
+     <button class="row" onclick="openAdd('${esc(i.title).replace(/'/g,"\\'")}',${i.id})">
+       <div class="t">${esc(i.title)}</div><span class="tag">Saved</span><span class="date">${esc(i.date)}</span>
+     </button>`).join('')}</div>`:`<div class="empty"><h4>Inbox empty</h4><p>Ideas you save for later land here.</p></div>`}
+  `;
+}
+function emptyState(){return `<div class="empty"><h4>No active plans yet</h4><p>Write an idea above and turn it into a plan.</p><button class="btn btn-primary btn-sm" onclick="openAdd('')">Add an idea</button></div>`;}
+function cardIdea(i){
+  const[a,b]=counts(i),p=pct(i);
+  return `<button class="ideacard" onclick="openWorkspace(${i.id})">
+    <div class="top"><h4>${esc(i.title)}</h4><span class="emoji">${i.emoji}</span></div>
+    <div class="bar"><i style="width:${p}%"></i></div>
+    <div class="barmeta"><span>${p}%</span><span>${a}/${b} tasks</span></div>
+  </button>`;
+}
+
+/* ---------------- IDEAS ---------------- */
+function viewIdeas(){
+  const active=S.ideas.filter(i=>i.status==='active');
+  $('#view').innerHTML=`
+   <div class="pagehead"><div><h1>Ideas</h1><p>Everything you've captured, planned or parked.</p></div>
+     <button class="btn btn-primary btn-sm" onclick="openAdd('')">Add an idea</button></div>
+   <div class="sec-title">With a plan</div>
+   ${active.length?`<div class="ideagrid">${active.map(cardIdea).join('')}</div>`:emptyState()}
+   <div class="sec-title">Saved for later</div>
+   ${S.inbox.length?`<div class="rowlist">${S.inbox.map(i=>`
+     <button class="row" onclick="openAdd('${esc(i.title).replace(/'/g,"\\'")}',${i.id})">
+       <div class="t">${esc(i.title)}</div><span class="tag">Turn into a plan</span><span class="date">${esc(i.date)}</span>
+     </button>`).join('')}</div>`:`<div class="empty"><h4>Nothing saved</h4><p>Park an idea when you're not ready to plan it.</p></div>`}
+  `;
+}
+
+/* ---------------- COMPLETED ---------------- */
+function viewCompleted(){
+  const done=S.ideas.filter(i=>i.status==='done');
+  const tasks=S.ideas.flatMap(i=>i.milestones.flatMap(m=>m.tasks.filter(t=>t.d).map(t=>({t:t.t,idea:i.title}))));
+  $('#view').innerHTML=`
+   <div class="pagehead"><div><h1>Completed</h1><p>Proof the ideas went somewhere.</p></div></div>
+   <div class="statgrid">
+     <div class="statbox"><span>${done.length}</span><small>goals finished</small></div>
+     <div class="statbox"><span>${tasks.length}</span><small>tasks completed</small></div>
+     <div class="statbox"><span>${S.ideas.length+S.inbox.length}</span><small>ideas captured</small></div>
+   </div>
+   <div class="sec-title">Finished goals</div>
+   ${done.length?`<div class="ideagrid">${done.map(i=>`
+     <div class="ideacard"><div class="top"><h4>${esc(i.title)}</h4><span class="emoji">${i.emoji}</span></div>
+     <div class="bar"><i style="width:100%"></i></div><div class="barmeta"><span>Complete</span><span>${counts(i)[1]} tasks</span></div></div>`).join('')}</div>`
+   :`<div class="empty"><h4>No finished goals yet</h4><p>Complete every task in a plan and it moves here.</p></div>`}
+   <div class="sec-title">Recent tasks</div>
+   ${tasks.length?`<div class="rowlist">${tasks.slice(-8).reverse().map(t=>`
+     <div class="row"><div class="t">${esc(t.t)}</div><span class="tag done">Done</span><span class="date">${esc(t.idea)}</span></div>`).join('')}</div>`
+   :`<div class="empty"><h4>Nothing yet</h4><p>Tick your first task to start the record.</p></div>`}
+  `;
+}
+
+/* ---------------- PROFILE ---------------- */
+function viewProfile(){
+  $('#view').innerHTML=`
+   <div class="pagehead"><div><h1>Profile</h1><p>Your account and how plans get built for you.</p></div></div>
+   <div class="card" style="display:flex;gap:16px;align-items:center">
+     <div class="avatar" style="background:var(--yellow)">${esc(S.user.name[0]||'A')}</div>
+     <div><div style="font-family:var(--display);font-size:18px">${esc(S.user.name)}</div>
+     <div style="color:var(--muted);font-size:13.5px">Free plan · 2 of 3 active plans</div></div>
+   </div>
+   <div class="sec-title">Planning preferences</div>
+   <div class="card">
+     <div style="font-size:14px;margin-bottom:10px"><b>Time each week</b></div>
+     <div class="chipset">${['1–2 h','3–4 h','5–6 h','7+ h'].map(h=>`<button class="chip" aria-pressed="${S.user.hours===h}" onclick="S.user.hours='${h}';viewProfile();toast('Weekly time updated')">${h}</button>`).join('')}</div>
+     <div style="font-size:14px;margin:20px 0 10px"><b>Focus areas</b></div>
+     <div class="chipset">${AREAS.map(a=>`<button class="chip" aria-pressed="${S.user.areas.includes(a)}" onclick="toggleArea('${a}')">${a}</button>`).join('')}</div>
+   </div>
+   <div class="sec-title">Account</div>
+   <div class="rowlist">
+     <button class="row" onclick="toast('Reminders are not part of this prototype')"><div class="t">Reminders</div><span class="date">Weekly</span></button>
+     <button class="row" onclick="toast('Billing is not part of this prototype')"><div class="t">Plan and billing</div><span class="date">Free</span></button>
+     <button class="row" onclick="go('landing')"><div class="t">Log out</div></button>
+   </div>`;
+}
+function toggleArea(a){const i=S.user.areas.indexOf(a);if(i>-1)S.user.areas.splice(i,1);else S.user.areas.push(a);viewProfile();}
+
+/* ---------------- ADD IDEA ---------------- */
+function openAdd(text,inboxId){
+  S.draft=(text||'').trim(); S.fromInbox=inboxId||null;
+  $('#view').innerHTML=`
+   <button class="backlink" onclick="tab('home')">← Back</button>
+   <div class="narrow">
+     <div class="pagehead"><div><h1>Add an idea</h1><p>What's on your mind?</p></div></div>
+     <textarea class="bigbox" id="addBox" placeholder="I want to start a YouTube channel…">${esc(S.draft)}</textarea>
+     <p style="color:var(--muted);font-size:13.5px;margin-top:12px">One line is enough. You can sharpen it in a moment.</p>
+     <div class="choice">
+       <button class="btn btn-line" onclick="saveForLater()">Save for later</button>
+       <button class="btn btn-primary" onclick="startClarify()">Turn into a plan →</button>
+     </div>
+   </div>`;
+  setTimeout(()=>{const b=$('#addBox');b.focus();b.setSelectionRange(b.value.length,b.value.length);},60);
+}
+function saveForLater(){
+  const v=$('#addBox').value.trim();
+  if(!v)return toast('Write the idea first');
+  if(S.fromInbox)return toast('Already in your inbox');
+  S.inbox.unshift({id:++S.seq,title:v,date:'Today'});
+  toast('Saved to your inbox');tab('home');
+}
+
+/* ---------------- CLARIFY ---------------- */
+function startClarify(){
+  const v=$('#addBox').value.trim();
+  if(!v)return toast('Write the idea first');
+  S.draft=v;S.clarify={why:'',target:'3 months',hours:S.user.hours};
+  renderClarify();
+}
+function renderClarify(){
+  $('#view').innerHTML=`
+   <button class="backlink" onclick="openAdd(S.draft)">← Back</button>
+   <div class="narrow">
+     <div class="pagehead"><div><h1>Let's sharpen it</h1><p>Three answers and the plan gets specific.</p></div></div>
+     <div class="summary"><b>Your idea:</b> ${esc(S.draft)}</div>
+     <div class="qcard"><div class="q">Why does this matter to you?</div>
+       <textarea class="bigbox" id="clWhy" style="min-height:80px;font-size:15px" placeholder="So I can…">${esc(S.clarify.why)}</textarea></div>
+     <div class="qcard"><div class="q">When do you want to get there?</div>
+       <div class="chipset">${['1 month','3 months','6 months','A year'].map(t=>`<button class="chip" aria-pressed="${S.clarify.target===t}" onclick="S.clarify.target='${t}';syncChips(this)">${t}</button>`).join('')}</div></div>
+     <div class="qcard"><div class="q">How many hours a week can you give it?</div>
+       <div class="chipset">${['1–2 h','3–4 h','5–6 h','7+ h'].map(t=>`<button class="chip" aria-pressed="${S.clarify.hours===t}" onclick="S.clarify.hours='${t}';syncChips(this)">${t}</button>`).join('')}</div></div>
+     <div class="choice"><button class="btn btn-primary" onclick="generatePlan()">Generate the plan →</button></div>
+   </div>`;
+}
+function syncChips(el){el.parentElement.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));el.setAttribute('aria-pressed','true');}
+
+/* ---------------- GENERATE PLAN ---------------- */
+const TEMPLATES=[
+  {name:'Foundations',span:'Stage 1',tasks:['Write down what "done" looks like','Spend an hour on what already exists','Pick the one resource you\u2019ll actually use']},
+  {name:'First real attempt',span:'Stage 2',tasks:['Make the smallest version of it','Show it to one person','Note what was harder than expected']},
+  {name:'Build the habit',span:'Stage 3',tasks:['Book a fixed slot in your week','Do it four times in a row','Review what to drop']},
+  {name:'Finish and share',span:'Stage 4',tasks:['Set the finish line and a date','Do the last push','Tell someone it\u2019s done']}
+];
+function planEmoji(t){
+  t=t.toLowerCase();
+  if(/photo|camera/.test(t))return'📷'; if(/book|read/.test(t))return'📚';
+  if(/app|code|program|develop/.test(t))return'💻'; if(/youtube|video|channel/.test(t))return'🎬';
+  if(/store|shop|business|sell/.test(t))return'🛒'; if(/gym|fit|run|health/.test(t))return'🏃';
+  if(/lang|german|english|french|speak/.test(t))return'🗣️'; if(/write|blog|novel/.test(t))return'✍️';
+  return'💡';
+}
+function generatePlan(){
+  S.clarify.why=$('#clWhy').value.trim();
+  const idea={id:++S.seq,emoji:planEmoji(S.draft),title:S.draft.replace(/^i want to /i,'').replace(/^./,c=>c.toUpperCase()),
+    why:S.clarify.why||'Because it matters to you',target:S.clarify.target,hours:S.clarify.hours+' / week',status:'draft',
+    milestones:TEMPLATES.map(m=>({name:m.name,span:m.span,tasks:m.tasks.map(t=>({t,d:false}))}))};
+  S.pending=idea;
+  $('#view').innerHTML=`
+   <button class="backlink" onclick="renderClarify()">← Back</button>
+   <div class="narrow">
+     <div class="pagehead"><div><h1>Here's your plan</h1><p>Change anything that doesn't fit, then approve it.</p></div></div>
+     <div class="summary"><b>${esc(idea.title)}</b><br>${esc(idea.why)} · ${esc(idea.target)} · ${esc(idea.hours)}</div>
+     <div class="planbox" id="planBox">${idea.milestones.map((m,i)=>`
+       <div class="msrow"><div class="msnum">${i+1}</div>
+         <div style="flex:1"><h4>${esc(m.name)}</h4><p>${m.tasks.map(t=>esc(t.t)).join(' · ')}</p></div>
+       </div>`).join('')}</div>
+     <div class="choice">
+       <button class="btn btn-line" onclick="toast('Editing is not wired up in this prototype')">Edit the plan</button>
+       <button class="btn btn-primary" onclick="approvePlan()">Approve and start →</button>
+     </div>
+   </div>`;
+}
+function approvePlan(){
+  const idea=S.pending;idea.status='active';S.ideas.unshift(idea);
+  if(S.fromInbox){S.inbox=S.inbox.filter(i=>i.id!==S.fromInbox);S.fromInbox=null;}
+  S.draft='';toast('Plan added. First task is waiting.');openWorkspace(idea.id);
+}
+
+/* ---------------- WORKSPACE ---------------- */
+function openWorkspace(id){S.currentId=id;S.wsTab='overview';renderWs();}
+function setWsTab(t){S.wsTab=t;renderWs();}
+function renderWs(){
+  const i=findIdea(S.currentId); if(!i)return tab('home');
+  const p=pct(i),[a,b]=counts(i);
+  let curIdx=i.milestones.findIndex(m=>m.tasks.some(t=>!t.d)); if(curIdx<0)curIdx=i.milestones.length-1;
+  const cur=i.milestones[curIdx];
+  const nextTask=cur.tasks.find(t=>!t.d);
+
+  const rail=`
+   <div class="rail">
+     <div class="rail-line"></div>
+     <div class="rail-fill" style="width:${(curIdx/(i.milestones.length-1||1))*100}%"></div>
+     <div class="dove-fly" style="left:${(curIdx/(i.milestones.length-1||1))*100}%"><svg><use href="#dove"/></svg></div>
+     <div class="rail-stops">
+       ${i.milestones.map((m,x)=>`<div class="stop ${x<curIdx?'done':''} ${x===curIdx?'now':''}">
+         <div class="dot"></div><b>${esc(m.name)}</b><small>${esc(m.span)}</small></div>`).join('')}
+     </div>
+   </div>`;
+
+  let body='';
+  if(S.wsTab==='overview'){
+    body=`
+     <div class="card"><h3>The goal</h3><p style="font-size:14.5px;line-height:1.65;margin-top:8px;color:#3A3833">${esc(i.why)}</p>
+       <div class="statgrid">
+         <div class="statbox"><span>${esc(i.target)}</span><small>target</small></div>
+         <div class="statbox"><span>${esc(i.hours)}</span><small>your pace</small></div>
+         <div class="statbox"><span>${a}/${b}</span><small>tasks done</small></div>
+       </div>
+     </div>
+     ${rail}
+     <div class="sec-title">Tasks in this stage — ${esc(cur.name)}</div>
+     ${cur.tasks.map((t,x)=>taskRow(curIdx,x,t)).join('')}
+     ${nextTask?`<div class="tasknext" style="margin-top:18px">
+        <div><div class="lbl">Next task</div><h4>${esc(nextTask.t)}</h4><div class="meta">About 30 min · high priority</div></div>
+        <button class="btn btn-primary btn-sm" style="margin-top:14px;align-self:flex-start" onclick="tickTask(${curIdx},${cur.tasks.indexOf(nextTask)})">Mark it done</button>
+      </div>`:''}`;
+  } else if(S.wsTab==='milestones'){
+    body=rail+i.milestones.map((m,x)=>`
+      <div class="card" style="margin-bottom:12px"><h3>${x+1}. ${esc(m.name)}</h3><p class="hint">${esc(m.span)} · ${m.tasks.filter(t=>t.d).length}/${m.tasks.length} done</p>
+      <div style="margin-top:12px">${m.tasks.map((t,y)=>taskRow(x,y,t)).join('')}</div></div>`).join('');
+  } else if(S.wsTab==='tasks'){
+    body=i.milestones.map((m,x)=>`<div class="sec-title" style="margin-top:18px">${esc(m.name)}</div>${m.tasks.map((t,y)=>taskRow(x,y,t)).join('')}`).join('');
+  } else {
+    body=`<div class="card"><h3>Notes</h3><p class="hint">Anything you learn while working on this.</p>
+      <textarea class="bigbox" style="margin-top:12px" placeholder="Write a note…"></textarea>
+      <button class="btn btn-line btn-sm" style="margin-top:12px" onclick="toast('Notes are not stored in this prototype')">Save note</button></div>`;
+  }
+
+  $('#view').innerHTML=`
+   <button class="backlink" onclick="tab('home')">← Back to home</button>
+   <div class="wshead">
+     <div>
+       <h1><span>${i.emoji}</span> ${esc(i.title)}</h1>
+       <div class="progline"><div class="bar"><i style="width:${p}%"></i></div><b>${p}%</b></div>
+     </div>
+   </div>
+   <div class="tabs">
+     ${[['overview','Overview'],['milestones','Milestones'],['tasks','All tasks'],['notes','Notes']].map(([k,l])=>
+       `<button class="tab ${S.wsTab===k?'on':''}" onclick="setWsTab('${k}')">${l}</button>`).join('')}
+   </div>
+   <div class="wsgrid">
+     <div>${body}</div>
+     <aside class="assist">
+       <div class="ahead"><svg style="width:20px;height:20px;color:var(--yellow)"><use href="#dove"/></svg><b>Assistant</b></div>
+       <div class="reply" id="aiReply">Ask about this plan and you'll get a suggestion here.</div>
+       <button class="prompt" onclick="ask('stuck')">I'm stuck on this stage</button>
+       <button class="prompt" onclick="ask('slow')">Make the pace slower</button>
+       <button class="prompt" onclick="ask('break')">Break this task down</button>
+       <button class="prompt" onclick="ask('resources')">Suggest a resource</button>
+     </aside>
+   </div>`;
+}
+function taskRow(mi,ti,t){
+  return `<button class="taskrow ${t.d?'done':''}" onclick="tickTask(${mi},${ti})">
+    <span class="tick"><svg><use href="#check"/></svg></span><span class="tt">${esc(t.t)}</span>
+  </button>`;
+}
+function tickTask(mi,ti){
+  const i=findIdea(S.currentId);const t=i.milestones[mi].tasks[ti];
+  t.d=!t.d;
+  if(t.d)toast('Task done. Progress updated.');
+  if(pct(i)===100){i.status='done';renderWs();showCel(i.title);return;}
+  renderWs();
+}
+const REPLIES={
+  stuck:'Pick the smallest task in this stage and do only that today. Momentum matters more than order.',
+  slow:'Stretching this plan by four weeks would put you at about two tasks a week. Say the word and it re-spaces.',
+  break:'Split it into: gather what you need, do a rough first pass, then fix the one thing that bothers you most.',
+  resources:'One free course and one short book usually beats a list of twenty links you never open.'
+};
+function ask(k){$('#aiReply').textContent=REPLIES[k];}
+
+/* ---------------- celebrate ---------------- */
+function showCel(title){$('#celTitle').textContent=title+' — complete';$('#celebrate').classList.add('on');}
+function closeCel(){$('#celebrate').classList.remove('on');tab('home');}
+
+/* boot */
+tab('home');go('landing');
+</script>
+</body>
+</html>
