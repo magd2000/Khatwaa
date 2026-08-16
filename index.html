@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --yellow:#FFCC00;
@@ -141,6 +142,11 @@ a{color:inherit}
 .stepdots{display:flex;gap:6px;justify-content:center;margin-top:22px}
 .stepdots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
 .stepdots i.on{background:var(--ink);width:18px;border-radius:3px}
+.autherr{display:none;margin-top:14px;background:#FDECEC;color:#A32020;border-radius:10px;padding:11px 14px;font-size:13.5px;line-height:1.5}
+.autherr.on{display:block}
+.autherr.info{background:var(--yellow-soft);color:#7A6400}
+.demoflag{position:fixed;left:14px;bottom:14px;z-index:90;background:var(--ink);color:var(--yellow);font-size:11.5px;font-weight:600;padding:7px 13px;border-radius:99px;letter-spacing:.03em}
+@media(max-width:860px){.demoflag{bottom:76px}}
 
 /* ================= APP SHELL ================= */
 .app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
@@ -396,13 +402,16 @@ a{color:inherit}
     <div>
       <button class="wordmark clickable" style="justify-content:center;margin-bottom:22px;width:100%" onclick="go('landing')" title="Back to the home page" aria-label="Back to the home page"><svg class="mark"><use href="#dove"/></svg><div>Khatwa</div></button>
       <div class="card-auth">
-        <h2>Create your account</h2>
-        <p class="lede">One place for the ideas you keep meaning to act on.</p>
-        <div class="field"><label for="suName">Name</label><input id="suName" placeholder="Ahmad"></div>
-        <div class="field"><label for="suMail">Email</label><input id="suMail" type="email" placeholder="you@email.com"></div>
-        <div class="field"><label for="suPass">Password</label><input id="suPass" type="password" placeholder="At least 8 characters"></div>
-        <button class="btn btn-primary w-full mt-20" onclick="go('onboarding')">Create account</button>
-        <p class="alt">Already have an account? <button onclick="signIn()" style="font-weight:600;text-decoration:underline">Log in</button></p>
+        <h2 id="authTitle">Create your account</h2>
+        <p class="lede" id="authLede">One place for the ideas you keep meaning to act on.</p>
+        <div class="field" id="nameField"><label for="suName">Name</label><input id="suName" placeholder="Ahmad"></div>
+        <div class="field"><label for="suMail">Email</label><input id="suMail" type="email" placeholder="you@email.com" autocomplete="email"></div>
+        <div class="field"><label for="suPass">Password</label><input id="suPass" type="password" placeholder="At least 8 characters" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')submitAuth()"></div>
+        <p class="autherr" id="authErr"></p>
+        <button class="btn btn-primary w-full mt-20" id="authBtn" onclick="submitAuth()">Create account</button>
+        <p class="alt" id="authAlt">Already have an account?
+          <button onclick="setAuthMode('login')" style="font-weight:600;text-decoration:underline">Log in</button></p>
       </div>
     </div>
   </div>
@@ -467,6 +476,96 @@ a{color:inherit}
 </div>
 
 <script>
+/* ============================================================
+   SUPABASE CONFIG — paste your two values here.
+   Supabase dashboard → Project Settings → API
+   Leave them as-is and the site runs in demo mode (no database).
+   ============================================================ */
+const SUPABASE_URL      = https://pxdmlbzysspxiemgjiyf.supabase.co;
+const SUPABASE_ANON_KEY = sb_secret_06fhdGsmxj2gIbA9t75TqA_8r7jVZBi;
+
+const LIVE = /^https:\/\/.+\.supabase\.co/.test(SUPABASE_URL) && SUPABASE_ANON_KEY.length > 30;
+const sb = LIVE ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+/* ---------------- data layer ---------------- */
+const rowToIdea = r => ({id:r.id, emoji:r.emoji||'💡', title:r.title, why:r.why||'', target:r.target||'',
+                         hours:r.hours||'', status:r.status, milestones:Array.isArray(r.plan)?r.plan:[]});
+const fmtDate = s => new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+
+async function loadAll(){
+  const {data:{user}} = await sb.auth.getUser();
+  if(!user) throw new Error('Not signed in');
+  S.uid = user.id;
+
+  const {data:prof} = await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();
+  if(prof){
+    S.user.name  = prof.name || user.email.split('@')[0];
+    S.user.hours = prof.weekly_hours || S.user.hours;
+    S.user.areas = prof.focus_areas || [];
+  } else { S.user.name = user.email.split('@')[0]; }
+
+  const {data:rows, error} = await sb.from('ideas').select('*').order('created_at',{ascending:false});
+  if(error) throw error;
+  S.ideas = rows.filter(r=>r.status!=='inbox').map(rowToIdea);
+  S.inbox = rows.filter(r=>r.status==='inbox').map(r=>({id:r.id, title:r.title, date:fmtDate(r.created_at)}));
+}
+async function saveProfile(){
+  if(!LIVE) return;
+  await sb.from('profiles').upsert({id:S.uid, name:S.user.name, weekly_hours:S.user.hours, focus_areas:S.user.areas});
+}
+async function saveIdea(idea){
+  if(!LIVE) return;
+  const {error} = await sb.from('ideas')
+    .update({title:idea.title, emoji:idea.emoji, why:idea.why, target:idea.target,
+             hours:idea.hours, status:idea.status, plan:idea.milestones})
+    .eq('id', idea.id);
+  if(error) toast('Could not save: '+error.message);
+}
+
+/* ---------------- auth ---------------- */
+let authMode = 'signup', authBusy = false;
+function authMsg(text, info){
+  const e=$('#authErr'); e.textContent=text||''; e.classList.toggle('on',!!text); e.classList.toggle('info',!!info);
+}
+function setAuthMode(mode){
+  authMode = mode; authMsg('');
+  $('#authTitle').textContent = mode==='signup' ? 'Create your account' : 'Welcome back';
+  $('#authLede').textContent  = mode==='signup'
+    ? 'One place for the ideas you keep meaning to act on.'
+    : 'Pick up where your plans left off.';
+  $('#nameField').style.display = mode==='signup' ? 'block' : 'none';
+  $('#authBtn').textContent = mode==='signup' ? 'Create account' : 'Log in';
+  $('#authAlt').innerHTML = mode==='signup'
+    ? `Already have an account? <button onclick="setAuthMode('login')" style="font-weight:600;text-decoration:underline">Log in</button>`
+    : `New here? <button onclick="setAuthMode('signup')" style="font-weight:600;text-decoration:underline">Create an account</button>`;
+}
+async function submitAuth(){
+  if(authBusy) return;
+  const name=$('#suName').value.trim(), email=$('#suMail').value.trim(), pass=$('#suPass').value;
+
+  if(!LIVE){ if(name) S.user.name=name; go('onboarding'); return; }
+  if(!email || !pass) return authMsg('Email and password are both required.');
+
+  authBusy=true; $('#authBtn').disabled=true; $('#authBtn').textContent='Working…'; authMsg('');
+  try{
+    if(authMode==='signup'){
+      const {data,error} = await sb.auth.signUp({email, password:pass, options:{data:{name}}});
+      if(error) throw error;
+      if(!data.session){ setAuthMode('login'); authMsg('Check your email to confirm the account, then log in.', true); return; }
+      S.uid=data.user.id; S.user.name = name || email.split('@')[0];
+      S.ideas=[]; S.inbox=[];
+      await saveProfile();
+      go('onboarding');
+    } else {
+      const {error} = await sb.auth.signInWithPassword({email, password:pass});
+      if(error) throw error;
+      await loadAll(); go('app'); tab('home');
+    }
+  } catch(e){ authMsg(e.message || 'Something went wrong. Try again.'); }
+  finally{ authBusy=false; $('#authBtn').disabled=false; setAuthMode(authMode); }
+}
+async function logOut(){ if(LIVE) await sb.auth.signOut(); S.ideas=[]; S.inbox=[]; go('landing'); }
+
 /* ---------------- state ---------------- */
 const S = {
   user:{name:'Ahmad', areas:[], hours:'5–6 h'},
@@ -510,10 +609,9 @@ function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remo
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('on'),2400);}
 function pct(idea){const all=idea.milestones.flatMap(m=>m.tasks);return all.length?Math.round(all.filter(t=>t.d).length/all.length*100):0;}
 function counts(idea){const all=idea.milestones.flatMap(m=>m.tasks);return[all.filter(t=>t.d).length,all.length];}
-function findIdea(id){return S.ideas.find(i=>i.id===id);}
+function findIdea(id){return S.ideas.find(i=>String(i.id)===String(id));}
 
-function fromHero(){const v=$('#heroIdea').value.trim();S.draft=v;go('signup');}
-function signIn(){S.user.name='Ahmad';go('app');tab('home');}
+function fromHero(){const v=$('#heroIdea').value.trim();S.draft=v;go('signup');setAuthMode('signup');}
 
 /* ---------------- onboarding ---------------- */
 let onbStep=0;
@@ -542,10 +640,12 @@ function pickArea(a,el){
   el.setAttribute('aria-pressed',i===-1);
 }
 function pickHours(h,el){S.user.hours=h;document.querySelectorAll('#onbBody .chip').forEach(c=>c.setAttribute('aria-pressed','false'));el.setAttribute('aria-pressed','true');}
-function onbNext(){
-  const nm=$('#suName').value.trim(); if(nm)S.user.name=nm;
-  if(onbStep<2){onbStep++;renderOnb();}
-  else{go('app');if(S.draft){tab('home');openAdd(S.draft);}else tab('home');}
+async function onbNext(){
+  const nm=$('#suName').value.trim(); if(nm && !LIVE)S.user.name=nm;
+  if(onbStep<2){onbStep++;renderOnb();return;}
+  if(LIVE){ try{ await saveProfile(); await loadAll(); }catch(e){ toast(e.message); } }
+  go('app');
+  if(S.draft){tab('home');openAdd(S.draft);}else tab('home');
 }
 
 /* ---------------- nav ---------------- */
@@ -588,7 +688,7 @@ function viewHome(){
      ${next?`
      <div class="tasknext">
        <div><div class="lbl">Next step</div><h4>${esc(next.task.t)}</h4><div class="meta">${esc(next.idea.title)} · about 30 min</div></div>
-       <button class="btn btn-primary btn-sm" style="margin-top:16px;align-self:flex-start" onclick="openWorkspace(${next.idea.id})">Open the task</button>
+       <button class="btn btn-primary btn-sm" style="margin-top:16px;align-self:flex-start" onclick="openWorkspace('${next.idea.id}')">Open the task</button>
      </div>`:`
      <div class="tasknext"><div><div class="lbl">Next step</div><h4>Nothing waiting</h4><div class="meta">Every task in your active plans is done.</div></div></div>`}
      <div class="card">
@@ -603,7 +703,7 @@ function viewHome(){
 
    <div class="sec-title">Idea inbox</div>
    ${S.inbox.length?`<div class="rowlist">${S.inbox.map(i=>`
-     <button class="row" onclick="openAdd('${esc(i.title).replace(/'/g,"\\'")}',${i.id})">
+     <button class="row" onclick="openAdd('${esc(i.title).replace(/'/g,"\\'")}','${i.id}')">
        <div class="t">${esc(i.title)}</div><span class="tag">Saved</span><span class="date">${esc(i.date)}</span>
      </button>`).join('')}</div>`:`<div class="empty"><h4>Inbox empty</h4><p>Ideas you save for later land here.</p></div>`}
   `;
@@ -611,7 +711,7 @@ function viewHome(){
 function emptyState(){return `<div class="empty"><h4>No active plans yet</h4><p>Write an idea above and turn it into a plan.</p><button class="btn btn-primary btn-sm" onclick="openAdd('')">Add an idea</button></div>`;}
 function cardIdea(i){
   const[a,b]=counts(i),p=pct(i);
-  return `<button class="ideacard" onclick="openWorkspace(${i.id})">
+  return `<button class="ideacard" onclick="openWorkspace('${i.id}')">
     <div class="top"><h4>${esc(i.title)}</h4><span class="emoji">${i.emoji}</span></div>
     <div class="bar"><i style="width:${p}%"></i></div>
     <div class="barmeta"><span>${p}%</span><span>${a}/${b} tasks</span></div>
@@ -628,7 +728,7 @@ function viewIdeas(){
    ${active.length?`<div class="ideagrid">${active.map(cardIdea).join('')}</div>`:emptyState()}
    <div class="sec-title">Saved for later</div>
    ${S.inbox.length?`<div class="rowlist">${S.inbox.map(i=>`
-     <button class="row" onclick="openAdd('${esc(i.title).replace(/'/g,"\\'")}',${i.id})">
+     <button class="row" onclick="openAdd('${esc(i.title).replace(/'/g,"\\'")}','${i.id}')">
        <div class="t">${esc(i.title)}</div><span class="tag">Turn into a plan</span><span class="date">${esc(i.date)}</span>
      </button>`).join('')}</div>`:`<div class="empty"><h4>Nothing saved</h4><p>Park an idea when you're not ready to plan it.</p></div>`}
   `;
@@ -669,7 +769,7 @@ function viewProfile(){
    <div class="sec-title">Planning preferences</div>
    <div class="card">
      <div style="font-size:14px;margin-bottom:10px"><b>Time each week</b></div>
-     <div class="chipset">${['1–2 h','3–4 h','5–6 h','7+ h'].map(h=>`<button class="chip" aria-pressed="${S.user.hours===h}" onclick="S.user.hours='${h}';viewProfile();toast('Weekly time updated')">${h}</button>`).join('')}</div>
+     <div class="chipset">${['1–2 h','3–4 h','5–6 h','7+ h'].map(h=>`<button class="chip" aria-pressed="${S.user.hours===h}" onclick="S.user.hours='${h}';saveProfile();viewProfile();toast('Weekly time updated')">${h}</button>`).join('')}</div>
      <div style="font-size:14px;margin:20px 0 10px"><b>Focus areas</b></div>
      <div class="chipset">${AREAS.map(a=>`<button class="chip" aria-pressed="${S.user.areas.includes(a)}" onclick="toggleArea('${a}')">${a}</button>`).join('')}</div>
    </div>
@@ -677,10 +777,10 @@ function viewProfile(){
    <div class="rowlist">
      <button class="row" onclick="toast('Reminders are not part of this prototype')"><div class="t">Reminders</div><span class="date">Weekly</span></button>
      <button class="row" onclick="toast('Billing is not part of this prototype')"><div class="t">Plan and billing</div><span class="date">Free</span></button>
-     <button class="row" onclick="go('landing')"><div class="t">Log out</div></button>
+     <button class="row" onclick="logOut()"><div class="t">Log out</div></button>
    </div>`;
 }
-function toggleArea(a){const i=S.user.areas.indexOf(a);if(i>-1)S.user.areas.splice(i,1);else S.user.areas.push(a);viewProfile();}
+function toggleArea(a){const i=S.user.areas.indexOf(a);if(i>-1)S.user.areas.splice(i,1);else S.user.areas.push(a);saveProfile();viewProfile();}
 
 /* ---------------- ADD IDEA ---------------- */
 function openAdd(text,inboxId){
@@ -698,11 +798,19 @@ function openAdd(text,inboxId){
    </div>`;
   setTimeout(()=>{const b=$('#addBox');b.focus();b.setSelectionRange(b.value.length,b.value.length);},60);
 }
-function saveForLater(){
+async function saveForLater(){
   const v=$('#addBox').value.trim();
   if(!v)return toast('Write the idea first');
   if(S.fromInbox)return toast('Already in your inbox');
-  S.inbox.unshift({id:++S.seq,title:v,date:'Today'});
+  if(LIVE){
+    const {data,error} = await sb.from('ideas')
+      .insert({user_id:S.uid, title:v, emoji:planEmoji(v), status:'inbox', plan:[]})
+      .select().single();
+    if(error) return toast('Could not save: '+error.message);
+    S.inbox.unshift({id:data.id, title:v, date:'Today'});
+  } else {
+    S.inbox.unshift({id:++S.seq,title:v,date:'Today'});
+  }
   toast('Saved to your inbox');tab('home');
 }
 
@@ -766,9 +874,19 @@ function generatePlan(){
      </div>
    </div>`;
 }
-function approvePlan(){
-  const idea=S.pending;idea.status='active';S.ideas.unshift(idea);
-  if(S.fromInbox){S.inbox=S.inbox.filter(i=>i.id!==S.fromInbox);S.fromInbox=null;}
+async function approvePlan(){
+  const idea=S.pending; idea.status='active';
+  if(LIVE){
+    const payload={title:idea.title, emoji:idea.emoji, why:idea.why, target:idea.target,
+                   hours:idea.hours, status:'active', plan:idea.milestones};
+    let res;
+    if(S.fromInbox) res = await sb.from('ideas').update(payload).eq('id',S.fromInbox).select().single();
+    else            res = await sb.from('ideas').insert({user_id:S.uid, ...payload}).select().single();
+    if(res.error) return toast('Could not save: '+res.error.message);
+    idea.id = res.data.id;
+  }
+  S.ideas.unshift(idea);
+  if(S.fromInbox){S.inbox=S.inbox.filter(i=>String(i.id)!==String(S.fromInbox));S.fromInbox=null;}
   S.draft='';toast('Plan added. First task is waiting.');openWorkspace(idea.id);
 }
 
@@ -851,12 +969,15 @@ function taskRow(mi,ti,t){
     <span class="tick"><svg><use href="#check"/></svg></span><span class="tt">${esc(t.t)}</span>
   </button>`;
 }
-function tickTask(mi,ti){
+async function tickTask(mi,ti){
   const i=findIdea(S.currentId);const t=i.milestones[mi].tasks[ti];
   t.d=!t.d;
-  if(t.d)toast('Task done. Progress updated.');
-  if(pct(i)===100){i.status='done';renderWs();showCel(i.title);return;}
+  const finished = pct(i)===100;
+  i.status = finished ? 'done' : 'active';
   renderWs();
+  if(t.d)toast('Task done. Progress updated.');
+  await saveIdea(i);
+  if(finished) showCel(i.title);
 }
 const REPLIES={
   stuck:'Pick the smallest task in this stage and do only that today. Momentum matters more than order.',
@@ -870,8 +991,22 @@ function ask(k){$('#aiReply').textContent=REPLIES[k];}
 function showCel(title){$('#celTitle').textContent=title+' — complete';$('#celebrate').classList.add('on');}
 function closeCel(){$('#celebrate').classList.remove('on');tab('home');}
 
-/* boot */
-tab('home');go('landing');
+/* ---------------- boot ---------------- */
+(async function boot(){
+  setAuthMode('signup');
+  if(!LIVE){
+    const f=document.createElement('div');
+    f.className='demoflag'; f.textContent='DEMO MODE — no database connected';
+    document.body.appendChild(f);
+    tab('home'); go('landing'); return;
+  }
+  S.ideas=[]; S.inbox=[];
+  try{
+    const {data:{session}} = await sb.auth.getSession();
+    if(session){ await loadAll(); go('app'); tab('home'); return; }
+  }catch(e){ console.error(e); }
+  go('landing');
+})();
 </script>
 </body>
 </html>
