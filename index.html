@@ -481,8 +481,8 @@ a{color:inherit}
    Supabase dashboard → Project Settings → API
    Leave them as-is and the site runs in demo mode (no database).
    ============================================================ */
-const SUPABASE_URL      = https://pxdmlbzysspxiemgjiyf.supabase.co;
-const SUPABASE_ANON_KEY = sb_secret_06fhdGsmxj2gIbA9t75TqA_8r7jVZBi;
+const SUPABASE_URL      = 'https://pxdmlbzysspxiemgjiyf.supabase.co/';
+const SUPABASE_ANON_KEY = 'sb_publishable_gQvf5xz8Hn0SKTZkTBHpbQ_DaMMcYdV';
 
 const LIVE = /^https:\/\/.+\.supabase\.co/.test(SUPABASE_URL) && SUPABASE_ANON_KEY.length > 30;
 const sb = LIVE ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
